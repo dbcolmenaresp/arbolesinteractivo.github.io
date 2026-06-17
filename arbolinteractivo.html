@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Árboles en Programación | Estructura de Datos Visual e Interactiva</title>
+    <!-- Fuentes y estilos base modernos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f7 0%, #d9e2ec 100%);
+            font-family: 'Inter', sans-serif;
+            color: #1a2c3e;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header y tipografía académica pero amigable */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0b3b3f, #1b5e6b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #2c4b5c;
+            max-width: 750px;
+            margin: 1rem auto 0;
+            background: rgba(255,255,240,0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 2rem;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #1e5b6e;
+            color: white;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* grid principal */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            padding: 1.6rem;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            border: 1px solid rgba(80, 120, 130, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.2);
+            background: white;
+        }
+
+        .card h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            border-left: 6px solid #2c8f9e;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+            color: #0e4b58;
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
+            color: #1a5e6b;
+            display: inline-block;
+            border-bottom: 2px solid #bdd9e2;
+        }
+
+        .highlight {
+            background: #e2f0f2;
+            border-radius: 1rem;
+            padding: 0.75rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .tree-viz {
+            background: #f9fbfd;
+            border-radius: 1.2rem;
+            padding: 0.8rem;
+            text-align: center;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        canvas {
+            background: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+            width: 100%;
+            height: auto;
+            border: 1px solid #cbdbe2;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin: 1rem 0 0.5rem;
+            justify-content: center;
+        }
+
+        button {
+            background: #2a6f7c;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background: #1f5560;
+            transform: scale(0.96);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .complexity-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            background: #eef3f5;
+            border-radius: 1.2rem;
+            padding: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .comp-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            border-bottom: 1px dashed #b4cfd6;
+            padding: 0.3rem 0;
+        }
+
+        .big-o {
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            color: #1e5b6e;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            font-size: 0.8rem;
+            color: #3b6f7e;
+            border-top: 1px solid #b9cfd8;
+        }
+
+        @media (max-width: 780px) {
+            body {
+                padding: 1rem;
+            }
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+            .card h2 {
+                font-size: 1.4rem;
+            }
+        }
+        .terminology {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        .term {
+            background: #e9f0f2;
+            border-radius: 2rem;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .inline-code {
+            background: #e4edef;
+            font-family: 'Fira Code', monospace;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <span class="badge">🌳 Estructuras de Datos | Ingeniería de Sistemas</span>
+        <h1>Árboles en Programación</h1>
+        <p>Modelos jerárquicos que potencian bases de datos, inteligencia artificial y sistemas de archivos. Una inmersión académica pero visual e interactiva.</p>
+    </div>
+
+    <!-- Panel principal: teoría + visualización interactiva -->
+    <div class="dashboard">
+        <!-- Columna explicativa teórica -->
+        <div class="card">
+            <h2>📐 Fundamentos esenciales</h2>
+            <p>Un <strong>árbol</strong> es una estructura no lineal que organiza datos en <strong>nodos</strong> conectados por aristas. Cada nodo tiene <strong>un único padre</strong> (excepto la raíz) y <strong>cero o más hijos</strong>. Esta jerarquía permite búsquedas rápidas, inserción eficiente y representación de datos anidados.</p>
+            <div class="terminology">
+                <span class="term">🌱 Raíz</span>
+                <span class="term">🍃 Hoja</span>
+                <span class="term">📌 Nivel</span>
+                <span class="term">📏 Altura</span>
+                <span class="term">👪 Padre / Hijo</span>
+                <span class="term">🌿 Subárbol</span>
+            </div>
+            <h3>🔍 Árbol Binario de Búsqueda (ABB)</h3>
+            <p>Propiedad fundamental: <strong>izquierdo < raíz < derecho</strong>. Esto permite búsqueda binaria: en cada paso reducimos el dominio a la mitad → <span class="inline-code">O(log n)</span> en árboles balanceados.</p>
+            <div class="highlight">
+                <pre style="margin:0; font-family:'Fira Code';">class Nodo:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+def insertar(raiz, val):
+    if not raiz: return Nodo(val)
+    if val < raiz.val:
+        raiz.left = insertar(raiz.left, val)
+    else:
+        raiz.right = insertar(raiz.right, val)
+    return raiz</pre>
+            </div>
+            <h3>⚙️ Recorridos (DFS)</h3>
+            <p><span class="inline-code">Preorden</span> (raíz → izquierda → derecha) | <span class="inline-code">Inorden</span> (izq → raíz → der) da elementos ordenados | <span class="inline-code">Postorden</span> (izq → der → raíz) útil para liberar memoria.</p>
+        </div>
+
+        <!-- Visualización interactiva del árbol -->
+        <div class="card">
+            <h2>🌿 Visualizador interactivo (ABB)</h2>
+            <p>Inserta valores en el árbol binario de búsqueda. Observa cómo se organiza jerárquicamente. Cada nodo respeta la propiedad: <strong>hijo izquierdo menor, derecho mayor</strong>.</p>
+            <div class="tree-viz">
+                <canvas id="treeCanvas" width="550" height="320" style="width:100%; height:auto; max-width:550px; margin:0 auto; display:block;"></canvas>
+                <div class="btn-group">
+                    <button id="btnInsert">➕ Insertar 42</button>
+                    <button id="btnInsertRand">🎲 Insertar aleatorio</button>
+                    <button id="btnReset">🗑️ Reiniciar árbol</button>
+                    <button id="btnInorden">🔄 Mostrar Inorden</button>
+                </div>
+                <div id="inordenDisplay" style="background:#eef2f4; border-radius: 20px; padding: 8px; margin-top: 12px; font-size:0.8rem; font-family:'Fira Code'; text-align:center; min-height: 48px;">
+                    💡 Haz clic en "Mostrar Inorden" para ver la secuencia ordenada.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segundo bloque: tipos de árboles + aplicaciones + complejidades -->
+    <div class="dashboard">
+        <div class="card">
+            <h2>🌲 Tipos fundamentales de árboles</h2>
+            <ul style="margin-left: 1.2rem; margin-top: 0.5rem;">
+                <li><strong>Árbol Binario:</strong> máximo 2 hijos por nodo.</li>
+                <li><strong>ABB (Binary Search Tree):</strong> orden total, búsqueda eficiente.</li>
+                <li><strong>AVL / Árbol Rojo-Negro:</strong> autobalanceados, evitan degeneración O(n).</li>
+                <li><strong>Árbol B / B+:</strong> usados en bases de datos y sistemas de archivos. Gran número de hijos, optimizados para disco.</li>
+                <li><strong>Trie:</strong> árbol de prefijos para cadenas (autocompletado, corrector ortográfico).</li>
+                <li><strong>Árbol de Huffman:</strong> compresión de datos (ZIP, JPEG).</li>
+            </ul>
+            <h3>🚀 Aplicaciones en Ingeniería de Sistemas</h3>
+            <div class="highlight">
+                ✔ <strong>Bases de datos relacionales:</strong> índices con B-Tree para acelerar consultas WHERE.<br>
+                ✔ <strong>Compiladores:</strong> AST (Abstract Syntax Tree) para representar código fuente.<br>
+                ✔ <strong>Sistemas de archivos:</strong> directorios anidados (árbol de jerarquía).<br>
+                ✔ <strong>Redes:</strong> Spanning Tree Protocol evita bucles en switches.<br>
+                ✔ <strong>IA / Machine Learning:</strong> Árboles de decisión, Random Forest.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⏱️ Complejidad & eficiencia</h2>
+            <p>La razón por la que los árboles dominan la ingeniería de software moderna: <strong>operaciones logarítmicas</strong> frente a estructuras lineales.</p>
+            <div class="complexity-table">
+                <div class="comp-item"><span>🔍 Búsqueda (ABB balanceado)</span><span class="big-o">O(log n)</span></div>
+                <div class="comp-item"><span>➕ Inserción (ABB balanceado)</span><span class="big-o">O(log n)</span></div>
+                <div class="comp-item"><span>❌ Eliminación (ABB balanceado)</span><span class="big-o">O(log n)</span></div>
+                <div class="comp-item"><span>📋 Recorrido inorden</span><span class="big-o">O(n)</span></div>
+                <div class="comp-item"><span>📌 Peor caso ABB (degenerado)</span><span class="big-o">O(n)</span></div>
+                <div class="comp-item"><span>🌲 Árbol AVL / Rojo-Negro</span><span class="big-o">O(log n) garantizado</span></div>
+            </div>
+            <p><span style="font-weight:600;">¿Por qué O(log n) es revolucionario?</span> Para un millón de elementos, ~20 comparaciones. Mientras una lista enlazada requeriría hasta 500k pasos.</p>
+            <div class="highlight">
+                <strong>Ingeniería en acción:</strong> Cuando diseñas un sistema con millones de usuarios, la elección del árbol (índices en B+ frente a hash) define si tu API responde en 5ms o 2 segundos.
+            </div>
+        </div>
+    </div>
+
+    <!-- Tercera sección: árboles en profundidad académica con ejemplos reales -->
+    <div class="dashboard">
+        <div class="card">
+            <h2>🧠 Más allá del código: Árboles en Sistemas Distribuidos</h2>
+            <p>En <strong>HDFS</strong> (Hadoop Distributed File System) el NameNode mantiene un árbol de metadatos con el espacio de nombres de archivos. La eficiencia de este árbol determina el escalado del clúster. En <strong>Git</strong>, las commits forman un DAG pero el sistema de objetos recrea árboles de directorios para snapshots. El algoritmo <strong>Merkle Tree</strong> (usado en blockchains y Git) permite verificar integridad de datos de forma eficiente.</p>
+            <h3>📌 Estrategia de Recorrido Iterativa (evita stack overflow)</h3>
+            <div class="highlight">
+                <pre>def inorder_iterative(root):
+    stack, result = [], []
+    curr = root
+    while stack or curr:
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        result.append(curr.val)
+        curr = curr.right
+    return result</pre>
+            </div>
+            <p>Recomendado para árboles muy profundos (ej: parser XML anidado).</p>
+        </div>
+        <div class="card">
+            <h2>🎓 Reflexión del ingeniero</h2>
+            <p>Dominar árboles significa comprender <strong>cuándo</strong> y <strong>por qué</strong> elegir una estructura jerárquica frente a tablas hash o listas. Un profesional experto evalúa:</p>
+            <ul style="margin-left: 1.2rem;">
+                <li>¿Necesito rangos (between, >, <)? → Árbol (índices ordenados).</li>
+                <li>¿Jerarquía natural (categorías, organigramas)? → Árbol N-ario.</li>
+                <li>¿Búsqueda exacta sin orden? → Tabla Hash.</li>
+                <li>¿Autocompletado o prefijos? → Trie.</li>
+                <li>¿Operaciones con persistencia en disco? → B-Tree.</li>
+            </ul>
+            <div style="background:#d9eef2; border-radius: 1rem; padding: 1rem; margin-top: 1rem;">
+                <span style="font-weight:800;">📌 Conclusión académica:</span> Los árboles no solo son una estructura de datos, sino un pilar conceptual en la abstracción de sistemas. Resolver problemas con recursión y jerarquías es una habilidad definitoria en ingeniería de software de alto rendimiento.
+            </div>
+        </div>
+    </div>
+    <footer>
+        🌟 Árboles en programación - teoría interactiva | Visualización ABB en tiempo real | Material didáctico para ingeniería de sistemas
+    </footer>
+</div>
+
+<script>
+    // Implementación completa de Árbol Binario de Búsqueda con renderizado en canvas
+    class NodoABB {
+        constructor(val) {
+            this.val = val;
+            this.left = null;
+            this.right = null;
+            this.x = 0;   // para dibujo dinámico
+            this.y = 0;
+        }
+    }
+
+    class ArbolInteractivo {
+        constructor() {
+            this.raiz = null;
+        }
+
+        insertar(val) {
+            const nuevo = new NodoABB(val);
+            if (!this.raiz) {
+                this.raiz = nuevo;
+                return true;
+            }
+            let actual = this.raiz;
+            while (true) {
+                if (val === actual.val) return false; // duplicado no insertamos
+                if (val < actual.val) {
+                    if (!actual.left) {
+                        actual.left = nuevo;
+                        return true;
+                    }
+                    actual = actual.left;
+                } else {
+                    if (!actual.right) {
+                        actual.right = nuevo;
+                        return true;
+                    }
+                    actual = actual.right;
+                }
+            }
+        }
+
+        // obtener recorrido inorden
+        inordenArr() {
+            const res = [];
+            function inorder(node) {
+                if (node) {
+                    inorder(node.left);
+                    res.push(node.val);
+                    inorder(node.right);
+                }
+            }
+            inorder(this.raiz);
+            return res;
+        }
+
+        limpiar() {
+            this.raiz = null;
+        }
+
+        // calcula posiciones para dibujo (coordenadas relativas al canvas)
+        asignarPosiciones(canvasWidth, canvasHeight, startX, startY, offsetX) {
+            if (!this.raiz) return;
+            const nivelInicial = 50;
+            const desplY = 55;
+            const asignar = (nodo, x, y, offset) => {
+                if (!nodo) return;
+                nodo.x = x;
+                nodo.y = y;
+                if (nodo.left) {
+                    asignar(nodo.left, x - offset, y + desplY, offset * 0.65);
+                }
+                if (nodo.right) {
+                    asignar(nodo.right, x + offset, y + desplY, offset * 0.65);
+                }
+            };
+            asignar(this.raiz, startX, startY, offsetX);
+        }
+
+        // dibujar aristas y nodos
+        dibujar(ctx, canvasWidth, canvasHeight) {
+            if (!this.raiz) {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                ctx.font = "14px 'Inter'";
+                ctx.fillStyle = "#7b8d93";
+                ctx.fillText("🌿 Árbol vacío — inserta valores", canvasWidth/2-100, canvasHeight/2);
+                return;
+            }
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            // dibujar conexiones
+            const drawEdges = (nodo) => {
+                if (!nodo) return;
+                if (nodo.left) {
+                    ctx.beginPath();
+                    ctx.moveTo(nodo.x, nodo.y);
+                    ctx.lineTo(nodo.left.x, nodo.left.y);
+                    ctx.strokeStyle = "#6a9ca8";
+                    ctx.lineWidth = 1.8;
+                    ctx.stroke();
+                    drawEdges(nodo.left);
+                }
+                if (nodo.right) {
+                    ctx.beginPath();
+                    ctx.moveTo(nodo.x, nodo.y);
+                    ctx.lineTo(nodo.right.x, nodo.right.y);
+                    ctx.stroke();
+                    drawEdges(nodo.right);
+                }
+            };
+            drawEdges(this.raiz);
+            // dibujar nodos
+            const drawNode = (nodo) => {
+                if (!nodo) return;
+                ctx.beginPath();
+                ctx.arc(nodo.x, nodo.y, 20, 0, 2 * Math.PI);
+                ctx.fillStyle = "#f4fbfe";
+                ctx.fill();
+                ctx.strokeStyle = "#226b7a";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.fillStyle = "#104c59";
+                ctx.font = "bold 16px 'Fira Code', monospace";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(nodo.val, nodo.x, nodo.y);
+                drawNode(nodo.left);
+                drawNode(nodo.right);
+            };
+            drawNode(this.raiz);
+        }
+    }
+
+    // Configuración del canvas interactivo
+    const canvas = document.getElementById('treeCanvas');
+    const ctx = canvas.getContext('2d');
+    let anchoCanvas = 550, altoCanvas = 320;
+    canvas.width = anchoCanvas;
+    canvas.height = altoCanvas;
+
+    const arbol = new ArbolInteractivo();
+
+    function resizeCanvasAndDraw() {
+        const container = canvas.parentElement;
+        const containerWidth = container.clientWidth;
+        const newWidth = Math.min(containerWidth, 550);
+        canvas.style.width = `${newWidth}px`;
+        canvas.width = newWidth;
+        canvas.height = 320;
+        anchoCanvas = canvas.width;
+        altoCanvas = canvas.height;
+        renderTree();
+    }
+    window.addEventListener('resize', () => resizeCanvasAndDraw());
+
+    function renderTree() {
+        if (!arbol.raiz) {
+            ctx.clearRect(0, 0, anchoCanvas, altoCanvas);
+            ctx.font = "14px 'Inter'";
+            ctx.fillStyle = "#6b8e9c";
+            ctx.fillText("🌱 Árbol vacío — inserta nodos", anchoCanvas/2-110, altoCanvas/2);
+            return;
+        }
+        // calcular posición central dependiendo del ancho real
+        const startX = anchoCanvas / 2;
+        const startY = 45;
+        const offsetInicial = Math.min(100, anchoCanvas / 4);
+        arbol.asignarPosiciones(anchoCanvas, altoCanvas, startX, startY, offsetInicial);
+        arbol.dibujar(ctx, anchoCanvas, altoCanvas);
+    }
+
+    function actualizarInorden() {
+        const inordenArr = arbol.inordenArr();
+        const displayDiv = document.getElementById('inordenDisplay');
+        if (inordenArr.length === 0) {
+            displayDiv.innerHTML = "📭 Árbol vacío. Inserta valores para ver el recorrido ordenado.";
+        } else {
+            displayDiv.innerHTML = `📋 <strong>Recorrido Inorden (valores ordenados):</strong> [ ${inordenArr.join(" → ")} ] &nbsp;|🌿 Los elementos aparecen de menor a mayor gracias a la propiedad del ABB.`;
+        }
+    }
+
+    // Insertar valores específicos
+    document.getElementById('btnInsert').addEventListener('click', () => {
+        let valor = 42;
+        arbol.insertar(valor);
+        renderTree();
+        actualizarInorden();
+    });
+    document.getElementById('btnInsertRand').addEventListener('click', () => {
+        let rand = Math.floor(Math.random() * 90) + 10;
+        arbol.insertar(rand);
+        renderTree();
+        actualizarInorden();
+    });
+    document.getElementById('btnReset').addEventListener('click', () => {
+        arbol.limpiar();
+        renderTree();
+        actualizarInorden();
+    });
+    document.getElementById('btnInorden').addEventListener('click', () => {
+        actualizarInorden();
+    });
+
+    // Algunos valores iniciales para que no esté vacío
+    arbol.insertar(50);
+    arbol.insertar(25);
+    arbol.insertar(75);
+    arbol.insertar(12);
+    arbol.insertar(37);
+    arbol.insertar(63);
+    arbol.insertar(88);
+    renderTree();
+    actualizarInorden();
+    resizeCanvasAndDraw();
+</script>
+</body>
+</html>
